@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "MMUST Market",
+    "slug": "mmust-market",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "mmustmarket",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mmust.market"
+    },
+    "android": {
+      "package": "com.mmust.market",
+      "adaptiveIcon": {
+        "backgroundColor": "#090909"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}
