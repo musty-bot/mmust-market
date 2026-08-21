@@ -65,6 +65,24 @@ export function ListingsProvider({ children }) {
     setLoading(false)
   }
 
+  const loadMyListings = async () => {
+    if (!user?.id) return []
+    const { data } = await supabase
+      .from('listings')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    return data || []
+  }
+
+  const deleteListing = async (id) => {
+    const { error } = await supabase
+      .from('listings')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+  }
+
   useEffect(() => {
     if (!user) {
       setItems([])
@@ -105,7 +123,7 @@ export function ListingsProvider({ children }) {
   }
 
   return (
-    <ListingsContext.Provider value={{ items, addListing, loading, refresh: loadListings, autoApprove }}>
+    <ListingsContext.Provider value={{ items, addListing, deleteListing, loadMyListings, loading, refresh: loadListings, autoApprove }}>
       {children}
     </ListingsContext.Provider>
   )
