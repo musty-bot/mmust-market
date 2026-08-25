@@ -6,7 +6,8 @@ import * as FileSystem from 'expo-file-system/legacy'
 const ListingsContext = createContext(null)
 const BUCKET = 'listing-images'
 
-export async function uploadListingImages(imageUris) {
+export async function uploadListingImages(imageUris, isOnline) {
+  if (!isOnline) throw new Error('No internet connection')
   if (!imageUris?.length) return []
   const results = []
   for (let i = 0; i < imageUris.length; i++) {
@@ -65,6 +66,25 @@ export function ListingsProvider({ children }) {
     setLoading(false)
   }
 
+  const loadMyListings = async () => {
+    if (!user?.id) return []
+    const { data } = await supabase
+      .from('listings')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+    return data || []
+  }
+
+  const deleteListing = async (id, isOnline) => {
+    if (!isOnline) throw new Error('No internet connection')
+    const { error } = await supabase
+      .from('listings')
+      .delete()
+      .eq('id', id)
+    if (error) throw error
+  }
+
   useEffect(() => {
     if (!user) {
       setItems([])
@@ -76,10 +96,11 @@ export function ListingsProvider({ children }) {
     loadSettings()
   }, [user])
 
-  const addListing = async (listing, imageUris = []) => {
+  const addListing = async (listing, imageUris = [], isOnline) => {
+    if (!isOnline) throw new Error('No internet connection')
     let images = listing.images || []
     if (imageUris.length > 0) {
-      images = await uploadListingImages(imageUris)
+      images = await uploadListingImages(imageUris, isOnline)
     }
 
     const shouldAutoApprove = autoApprove
@@ -105,7 +126,7 @@ export function ListingsProvider({ children }) {
   }
 
   return (
-    <ListingsContext.Provider value={{ items, addListing, loading, refresh: loadListings, autoApprove }}>
+    <ListingsContext.Provider value={{ items, addListing, deleteListing, loadMyListings, loading, refresh: loadListings, autoApprove }}>
       {children}
     </ListingsContext.Provider>
   )

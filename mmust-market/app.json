@@ -4,15 +4,23 @@
     "slug": "mmust-market",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "scheme": "mmustmarket",
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mmust.market"
+      "bundleIdentifier": "com.mmust.market",
+      "icon": {
+        "adaptive": {
+          "foregroundImage": "./assets/icon.png",
+          "backgroundColor": "#090909"
+        }
+      }
     },
     "android": {
       "package": "com.mmust.market",
       "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#090909"
       }
     },
@@ -23,6 +31,13 @@
     "plugins": [
       "expo-router",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a0da2159-8bad-4209-8dd9-e4f9d785c181"
+      }
+    },
+    "owner": "musty-bot"
   }
 }

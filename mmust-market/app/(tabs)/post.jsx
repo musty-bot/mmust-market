@@ -4,11 +4,13 @@ import { useRouter } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import { useListings } from '../../context/ListingsContext'
 import { useAuth } from '../../context/AuthContext'
+import { useNetwork } from '../../context/NetworkContext'
 import { screen as s } from '../../components/screenStyles'
 import { theme } from '../../theme'
 
 export default function Post() {
   const router = useRouter()
+  const isOnline = useNetwork()
   const { addListing } = useListings()
   const { user } = useAuth()
   const [type, setType] = useState('product')
@@ -49,6 +51,10 @@ export default function Post() {
 
   const submit = async () => {
     if (!form.title.trim() || !form.price || submitting) return
+    if (!isOnline) {
+      Alert.alert('No Connection', 'Please connect to the internet to post listings.')
+      return
+    }
     try {
       setSubmitting(true)
       await addListing({
@@ -57,7 +63,7 @@ export default function Post() {
         price: Number(form.price),
         seller: user?.name || 'You',
         phone: form.phone || user?.phone || '0700000000',
-      }, images)
+      }, images, isOnline)
       router.replace('/market')
     } catch (e) {
       console.error('Submit error', e)

@@ -3,7 +3,8 @@ import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { AuthProvider, useAuth } from '../context/AuthContext'
 import { ListingsProvider } from '../context/ListingsContext'
-import { View, Text } from 'react-native'
+import { NetworkProvider, useNetwork } from '../context/NetworkContext'
+import { View, Text, StyleSheet } from 'react-native'
 import { theme } from '../theme'
 import { useRouter } from 'expo-router'
 import { supabase } from '../lib/supabaseClient'
@@ -75,25 +76,56 @@ function MaintenanceGate() {
   return null
 }
 
+const NetworkBanner = () => {
+  const isOnline = useNetwork();
+  if (isOnline) return null;
+  return (
+    <View style={bannerStyles.container}>
+      <Text style={bannerStyles.text}>Offline</Text>
+    </View>
+  );
+};
+
+const bannerStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: theme.danger,
+    paddingVertical: 6,
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  text: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 13,
+  },
+});
+
 export default function RootLayout() {
   return (
     <ErrorBoundary>
       <AuthProvider>
         <ListingsProvider>
-          <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="splash" />
-            <Stack.Screen name="welcome" />
-            <Stack.Screen name="login" />
-            <Stack.Screen name="register" />
-            <Stack.Screen name="set-pin" />
-            <Stack.Screen name="confirm-pin" />
-            <Stack.Screen name="forgot-pin" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="listing/[id]" />
-          </Stack>
-          <MaintenanceGate />
-          <RootGate />
+          <NetworkProvider>
+            <StatusBar style="light" />
+            <NetworkBanner />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="splash" />
+              <Stack.Screen name="welcome" />
+              <Stack.Screen name="login" />
+              <Stack.Screen name="register" />
+              <Stack.Screen name="set-pin" />
+              <Stack.Screen name="confirm-pin" />
+              <Stack.Screen name="forgot-pin" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="listing/[id]" />
+            </Stack>
+            <MaintenanceGate />
+            <RootGate />
+          </NetworkProvider>
         </ListingsProvider>
       </AuthProvider>
     </ErrorBoundary>

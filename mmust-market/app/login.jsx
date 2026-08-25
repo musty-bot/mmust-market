@@ -94,8 +94,8 @@ export default function Login() {
         />
 
         <View style={{ alignItems: 'center', gap: 10, marginTop: 18 }}>
-          <TouchableOpacity onPress={() => router.replace('/register')}>
-            <Text style={styles.link}>{error ? 'Create Account' : 'Forgot PIN?'}</Text>
+          <TouchableOpacity onPress={() => router.replace('/forgot-pin')}>
+            <Text style={styles.link}>Forgot PIN?</Text>
           </TouchableOpacity>
         </View>
       </Animated.View>

@@ -40,6 +40,19 @@ ON public.listings FOR SELECT
 TO authenticated
 USING (auth.uid() = user_id);
 
+-- Allow authenticated users to update their own pending listings
+CREATE POLICY "Users can update own pending listings"
+ON public.listings FOR UPDATE
+TO authenticated
+USING (auth.uid() = user_id and status = 'pending')
+WITH CHECK (auth.uid() = user_id and status = 'pending');
+
+-- Allow authenticated users to delete their own listings
+CREATE POLICY "Users can delete own listings"
+ON public.listings FOR DELETE
+TO authenticated
+USING (auth.uid() = user_id);
+
 -- Table policies for "app_settings"
 -- Allow public to read app settings (needed for auto_approve check in app)
 CREATE POLICY "Public can read app settings"

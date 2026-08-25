@@ -5,14 +5,14 @@ import { screen as s } from '../../components/screenStyles'
 import { theme } from '../../theme'
 
 export default function Profile() {
-  const { user, logout } = useAuth()
   const router = useRouter()
+  const { user, logout } = useAuth()
 
   const items = [
-    { label: 'My listings', sub: 'Items you posted' },
-    { label: 'Saved', sub: 'Bookmarked items' },
-    { label: 'Settings', sub: 'Account & privacy' },
-    { label: 'Help & support', sub: 'FAQ, contact us' },
+    { label: 'My listings', sub: 'Items you posted', action: () => router.push('/my-listings') },
+    { label: 'Saved', sub: 'Bookmarked items', action: () => {} },
+    { label: 'Settings', sub: 'Account & privacy', action: () => {} },
+    { label: 'Help & support', sub: 'FAQ, contact us', action: () => {} },
   ]
 
   return (
