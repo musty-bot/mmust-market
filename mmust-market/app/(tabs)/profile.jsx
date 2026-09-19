@@ -1,12 +1,30 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Alert, useState } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../../context/AuthContext'
 import { screen as s } from '../../components/screenStyles'
 import { theme } from '../../theme'
+import { downloadApp, openDownloadedFile, openGitHubRelease } from '../../lib/download'
 
 export default function Profile() {
   const router = useRouter()
   const { user, logout } = useAuth()
+  const [downloading, setDownloading] = useState(false)
+  const [progress, setProgress] = useState(0)
+
+  const handleDownload = async () => {
+    setDownloading(true)
+    setProgress(0)
+    const result = await downloadApp((p) => setProgress(p))
+    setDownloading(false)
+    if (result.success) {
+      Alert.alert('Download Complete', result.fileName + ' downloaded successfully.', [
+        { text: 'Install', onPress: () => openDownloadedFile(result.uri) },
+        { text: 'Later', style: 'cancel' },
+      ])
+    } else {
+      Alert.alert('Download Failed', result.error || 'Could not download the app.')
+    }
+  }
 
   const items = [
     { label: 'My listings', sub: 'Items you posted', action: () => router.push('/my-listings') },
@@ -41,24 +59,43 @@ export default function Profile() {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
               {it.icon ? <Text style={{ fontSize: 22 }}>{it.icon}</Text> : <View style={{ width: 22 }} />}
-            <View>
-              <Text style={{ fontWeight: '600', fontSize: 15, color: theme.text }}>{it.label}</Text>
-              <Text style={{ color: theme.textMuted, fontSize: 12 }}>{it.sub}</Text>
+              <View>
+                <Text style={{ fontWeight: '600', fontSize: 15, color: theme.text }}>{it.label}</Text>
+                <Text style={{ color: theme.textMuted, fontSize: 12 }}>{it.sub}</Text>
+              </View>
             </View>
-            </View>
-            <Text style={{ color: theme.textMuted }}>â€º</Text>
+            <Text style={{ color: theme.textMuted }}>›</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <TouchableOpacity
-        style={[s.btn, { marginTop: 20, borderColor: theme.danger }]}
-        onPress={() => { logout(); router.replace('/login') }}
-      >
+      <View style={[s.card, { marginTop: 16 }]}>
+        <Text style={{ fontSize: 16, fontWeight: '700', color: theme.text, marginBottom: 8 }}>Download App</Text>
+        <Text style={{ color: theme.textMuted, fontSize: 13, marginBottom: 12 }}>Get the latest version of MMUST Market.</Text>
+        {downloading ? (
+          <View>
+            <View style={{ height: 8, backgroundColor: theme.surface2, borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+              <View style={{ height: '100%', width: progress + '%', backgroundColor: theme.accent, borderRadius: 4 }} />
+            </View>
+            <Text style={{ color: theme.textMuted, fontSize: 12, textAlign: 'center' }}>Downloading... {Math.round(progress)}%</Text>
+          </View>
+        ) : (
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <TouchableOpacity style={[s.btn, { flex: 1 }]} onPress={handleDownload}>
+              <Text style={{ fontWeight: '700', color: '#04150a' }}>Download APK</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[s.btn, { flex: 1, borderColor: theme.border }]} onPress={openGitHubRelease}>
+              <Text style={{ fontWeight: '700', color: theme.text }}>Releases</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+
+      <TouchableOpacity style={[s.btn, { marginTop: 20, borderColor: theme.danger }]} onPress={() => { logout(); router.replace('/login') }}>
         <Text style={{ fontWeight: '700', color: theme.danger }}>Log out</Text>
       </TouchableOpacity>
 
-      <Text style={{ textAlign: 'center', color: theme.textMuted, fontSize: 12, marginTop: 16 }}>MMUST Market v1.0 Â· Campus marketplace</Text>
+      <Text style={{ textAlign: 'center', color: theme.textMuted, fontSize: 12, marginTop: 16 }}>MMUST Market v1.0 · Campus marketplace</Text>
     </ScrollView>
   )
 }
