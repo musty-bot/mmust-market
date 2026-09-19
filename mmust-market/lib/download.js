@@ -27,7 +27,10 @@ async function getLatestReleaseDownloadUrl() {
   }
 }
 
-export async function downloadApp(onProgress) {
+export async function downloadApp(onProgress, isOnline = true) {
+  if (!isOnline) {
+    return { success: false, error: 'No internet connection. Please check your network.' }
+  }
   try {
     const downloadUrl = await getLatestReleaseDownloadUrl()
     const urlPath = downloadUrl.split('?')[0]
