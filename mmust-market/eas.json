@@ -10,17 +10,8 @@
       "node": "20.18.0"
     },
     "production": {
-      "android": { "buildType": "aab" },
+      "android": { "buildType": "app-bundle" },
       "node": "20.18.0"
     }
-  },
-  "updates": {
-    "url": "https://cdn.expo.dev/v1/a0da2159-8bad-4209-8dd9-e4f9d785c181/channels/production",
-    "enabled": true,
-    "checkAutomatically": "always",
-    "fallbackToCacheTimeoutMs": 0
-  },
-  "runtimeVersion": {
-    "key": "version"
   }
 }
