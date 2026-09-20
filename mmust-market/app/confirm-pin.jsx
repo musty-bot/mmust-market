@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../context/AuthContext'
+import { useNetwork } from '../context/NetworkContext'
 import { theme } from '../theme'
 
 export default function ConfirmPin() {
   const router = useRouter()
   const { pendingPin, setPin } = useAuth()
+  const isOnline = useNetwork()
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
 
@@ -28,6 +30,10 @@ export default function ConfirmPin() {
     if (confirm !== pendingPin) {
       setError('PINs do not match')
       setConfirm('')
+      return
+    }
+    if (!isOnline) {
+      Alert.alert('No Connection', 'Please connect to the internet to set your PIN.')
       return
     }
     try {
