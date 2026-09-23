@@ -30,11 +30,11 @@ export default function Login() {
   const submit = async () => {
     if (pin.length !== 4) return
     if (!session?.user) {
-      setError('Create an account to start using MMUST Market.')
+      setError('Create MMUST Market account')
       return
     }
     if (isOnline === false) {
-      setError('No internet connection. Please turn on WiFi or mobile data.')
+      setError('No connection, check internet')
       return
     }
     if (isOnline === null) {
@@ -52,7 +52,6 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
-  }
 
   return (
     <View style={styles.container}>

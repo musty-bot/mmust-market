@@ -33,7 +33,7 @@ export default function ConfirmPin() {
       return
     }
     if (isOnline === false) {
-      setError('No internet connection. Please turn on WiFi or mobile data.')
+      setError('No connection, check internet')
       return
     }
     if (isOnline === null) {

@@ -111,9 +111,17 @@ export function AuthProvider({ children }) {
   }
 
   const loginWithPin = async (pin) => {
-    if (!session?.user) throw new Error('No session')
-    const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
-    if (!data || data.pin !== pin) throw new Error('Invalid PIN')
+    if (!session?.user) throw new Error('Create MMUST Market account')
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', session.user.id).single()
+    if (error) {
+      const msg = String(error.message || '').toLowerCase()
+      if (msg.includes('network') || msg.includes('fetch') || msg.includes('timeout') || msg.includes('load failed') || msg.includes('offline')) {
+        throw new Error('No connection, check internet')
+      }
+      throw error
+    }
+    if (!data) throw new Error('Create MMUST Market account')
+    if (data.pin !== pin) throw new Error('Invalid PIN')
     const u = { ...user, pinSet: true, pin: data.pin }
     setUser(u)
     setTimedOut(false)
