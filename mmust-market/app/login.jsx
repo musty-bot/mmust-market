@@ -33,8 +33,12 @@ export default function Login() {
       setError('Create an account to start using MMUST Market.')
       return
     }
-    if (!isOnline) {
-      Alert.alert('No Connection', 'Please connect to the internet to login.')
+    if (isOnline === false) {
+      setError('No internet connection. Please turn on WiFi or mobile data.')
+      return
+    }
+    if (isOnline === null) {
+      setError('Checking network...')
       return
     }
     setLoading(true)

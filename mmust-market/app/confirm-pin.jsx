@@ -32,8 +32,12 @@ export default function ConfirmPin() {
       setConfirm('')
       return
     }
-    if (!isOnline) {
-      Alert.alert('No Connection', 'Please connect to the internet to set your PIN.')
+    if (isOnline === false) {
+      setError('No internet connection. Please turn on WiFi or mobile data.')
+      return
+    }
+    if (isOnline === null) {
+      setError('Checking network...')
       return
     }
     try {

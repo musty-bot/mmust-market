@@ -24,8 +24,12 @@ export default function Register() {
 
   const handleRegister = async () => {
     if (!name.trim() || !phone.trim() || !password) return
-    if (!isOnline) {
+    if (isOnline === false) {
       Alert.alert('No Connection', 'Please connect to the internet to create an account.')
+      return
+    }
+    if (isOnline === null) {
+      Alert.alert('Checking network...')
       return
     }
     setSubmitting(true)

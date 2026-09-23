@@ -4,7 +4,7 @@ import NetInfo from '@react-native-community/netinfo';
 const NetworkContext = createContext();
 
 export const NetworkProvider = ({ children }) => {
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(null);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
