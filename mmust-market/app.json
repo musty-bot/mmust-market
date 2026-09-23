@@ -10,18 +10,16 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mmust.market",
-      "icon": {
-        "adaptive": {
-          "foregroundImage": "./assets/icon.png",
-          "backgroundColor": "#090909"
-        }
-      }
+      "icon": "./assets/icon.png"
     },
     "android": {
       "package": "com.mmust.market",
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#090909"
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "web": {
@@ -38,6 +36,9 @@
         "projectId": "a0da2159-8bad-4209-8dd9-e4f9d785c181"
       }
     },
-    "owner": "musty-bot"
+    "owner": "musty-bot",
+    "updates": {
+      "url": "https://u.expo.dev/a0da2159-8bad-4209-8dd9-e4f9d785c181"
+    }
   }
 }
