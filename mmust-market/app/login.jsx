@@ -52,6 +52,7 @@ export default function Login() {
     } finally {
       setLoading(false)
     }
+  }
 
   return (
     <View style={styles.container}>
