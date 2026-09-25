@@ -54,7 +54,7 @@ export function AuthProvider({ children }) {
 
   const isNetworkError = (err) => {
     if (!err) return false
-    const msg = String(err.message || err.code || err.details || err || '').toLowerCase()
+    const msg = String(err.message || err.code || err.details || err.status || err || '').toLowerCase()
     return msg.includes('network') || 
            msg.includes('fetch') || 
            msg.includes('timeout') || 
@@ -69,18 +69,21 @@ export function AuthProvider({ children }) {
            msg.includes('timeout') ||
            msg.includes('eai_again') ||
            msg.includes('enotfound') ||
-           msg.includes('etimedout')
+           msg.includes('etimedout') ||
+           msg.includes('failed to connect') ||
+           msg.includes('unable to connect') ||
+           msg.includes('no internet') ||
+           msg.includes('no network') ||
+           msg.includes('connection lost') ||
+           msg.includes('request failed') ||
+           msg.includes('aborted')
   }
 
   const loadProfile = async (userId) => {
     try {
       const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
       if (error) {
-        if (isNetworkError(error)) {
-          setUser(null)
-          setLoading(false)
-          return
-        }
+        // Any error (network or not) -> don't create user, let login screen handle it
         setUser(null)
         setLoading(false)
         return
@@ -95,11 +98,7 @@ export function AuthProvider({ children }) {
       setUser(u)
       setLoading(false)
     } catch (err) {
-      if (isNetworkError(err)) {
-        setUser(null)
-        setLoading(false)
-        return
-      }
+      // Any exception -> don't create user
       setUser(null)
       setLoading(false)
     }
