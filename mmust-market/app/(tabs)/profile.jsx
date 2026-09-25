@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity, ScrollView, Alert, useState } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../../context/AuthContext'
-import { useNetwork } from '../../context/NetworkContext'
 import { screen as s } from '../../components/screenStyles'
 import { theme } from '../../theme'
 import { downloadApp, openDownloadedFile, openGitHubRelease } from '../../lib/download'
@@ -9,18 +8,13 @@ import { downloadApp, openDownloadedFile, openGitHubRelease } from '../../lib/do
 export default function Profile() {
   const router = useRouter()
   const { user, logout } = useAuth()
-  const isOnline = useNetwork()
   const [downloading, setDownloading] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const handleDownload = async () => {
-    if (!isOnline) {
-      Alert.alert('No Connection', 'Please connect to the internet to download the app.')
-      return
-    }
     setDownloading(true)
     setProgress(0)
-    const result = await downloadApp((p) => setProgress(p), isOnline)
+    const result = await downloadApp((p) => setProgress(p))
     setDownloading(false)
     if (result.success) {
       Alert.alert('Download Complete', result.fileName + ' downloaded successfully.', [

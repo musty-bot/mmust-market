@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Animated, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../context/AuthContext'
-import { useNetwork } from '../context/NetworkContext'
 import FloatingCard from '../components/FloatingCard'
 import PremiumButton from '../components/PremiumButton'
 import { theme, shadows } from '../theme'
@@ -10,7 +9,6 @@ import { theme, shadows } from '../theme'
 export default function Login() {
   const router = useRouter()
   const { loginWithPin, session } = useAuth()
-  const isOnline = useNetwork()
   const [pin, setPin] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -31,14 +29,6 @@ export default function Login() {
     if (pin.length !== 4) return
     if (!session?.user) {
       setError('Create MMUST Market account')
-      return
-    }
-    if (isOnline === false) {
-      setError('No connection, check internet')
-      return
-    }
-    if (isOnline === null) {
-      setError('Checking network...')
       return
     }
     setLoading(true)

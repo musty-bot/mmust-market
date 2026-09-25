@@ -53,7 +53,20 @@ export function AuthProvider({ children }) {
   }, [])
 
   const loadProfile = async (userId) => {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    if (error) {
+      const msg = String(error.message || '').toLowerCase()
+      if (msg.includes('network') || msg.includes('fetch') || msg.includes('timeout') || msg.includes('load failed') || msg.includes('offline')) {
+        // Network error: don't create a user, keep loading false so app can show login/no connection
+        setUser(null)
+        setLoading(false)
+        return
+      }
+      // Other errors (e.g., no profile): treat as no profile
+      setUser(null)
+      setLoading(false)
+      return
+    }
     const u = {
       id: userId,
       name: data?.name || 'Student',
@@ -131,7 +144,13 @@ export function AuthProvider({ children }) {
   const setPin = async (pin) => {
     if (!session?.user) throw new Error('No session')
     const { error } = await supabase.from('profiles').update({ pin_set: true, pin }).eq('id', session.user.id)
-    if (error) throw error
+    if (error) {
+      const msg = String(error.message || '').toLowerCase()
+      if (msg.includes('network') || msg.includes('fetch') || msg.includes('timeout') || msg.includes('load failed') || msg.includes('offline')) {
+        throw new Error('No connection, check internet')
+      }
+      throw error
+    }
     const u = { ...user, pinSet: true, pin }
     setUser(u)
     return u

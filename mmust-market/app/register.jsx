@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Animated, StyleSheet, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Animated, StyleSheet } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useAuth } from '../context/AuthContext'
-import { useNetwork } from '../context/NetworkContext'
 import FloatingCard from '../components/FloatingCard'
 import PremiumButton from '../components/PremiumButton'
 import { theme } from '../theme'
@@ -10,7 +9,6 @@ import { theme } from '../theme'
 export default function Register() {
   const router = useRouter()
   const { register } = useAuth()
-  const isOnline = useNetwork()
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
@@ -24,14 +22,6 @@ export default function Register() {
 
   const handleRegister = async () => {
     if (!name.trim() || !phone.trim() || !password) return
-    if (isOnline === false) {
-      Alert.alert('No Connection', 'Please connect to the internet to create an account.')
-      return
-    }
-    if (isOnline === null) {
-      Alert.alert('Checking network...')
-      return
-    }
     setSubmitting(true)
     setError('')
     try {

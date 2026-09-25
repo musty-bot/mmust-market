@@ -39,6 +39,9 @@
     "owner": "musty-bot",
     "updates": {
       "url": "https://u.expo.dev/a0da2159-8bad-4209-8dd9-e4f9d785c181"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

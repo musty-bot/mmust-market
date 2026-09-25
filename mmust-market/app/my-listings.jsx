@@ -3,14 +3,12 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ActivityIndi
 import { useRouter } from 'expo-router'
 import { useListings } from '../context/ListingsContext'
 import { useAuth } from '../context/AuthContext'
-import { useNetwork } from '../context/NetworkContext'
 import { theme } from '../theme'
 import { screen as s } from '../components/screenStyles'
 
 export default function MyListings() {
   const router = useRouter()
   const { user } = useAuth()
-  const isOnline = useNetwork()
   const { loadMyListings, deleteListing } = useListings()
   const [listings, setListings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -27,7 +25,7 @@ export default function MyListings() {
     refresh()
   }, [])
 
-  const handleDelete = (item) => {
+const handleDelete = (item) => {
     Alert.alert('Delete listing', `Are you sure you want to delete "${item.title}"?`, [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -36,13 +34,13 @@ export default function MyListings() {
         onPress: async () => {
            try {
              setDeletingId(item.id)
-             await deleteListing(item.id, isOnline)
+             await deleteListing(item.id)
              setListings((prev) => prev.filter((l) => l.id !== item.id))
-          } catch (e) {
-            Alert.alert('Error', e.message || 'Failed to delete listing')
-          } finally {
-            setDeletingId(null)
-          }
+           } catch (e) {
+             Alert.alert('Error', e.message || 'Failed to delete listing')
+           } finally {
+             setDeletingId(null)
+           }
         },
       },
     ])
