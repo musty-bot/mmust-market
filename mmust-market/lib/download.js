@@ -6,6 +6,26 @@ const GITHUB_REPO = 'mmust-market'
 const GITHUB_API = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/releases/latest'
 const GITHUB_DOWNLOAD_URL = 'https://github.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/releases/latest/download'
 
+const isNetworkError = (err) => {
+  if (!err) return false
+  const msg = String(err.message || err.code || err || '').toLowerCase()
+  return msg.includes('network') || 
+         msg.includes('fetch') || 
+         msg.includes('timeout') || 
+         msg.includes('load failed') || 
+         msg.includes('offline') ||
+         msg.includes('failed to fetch') ||
+         msg.includes('network request failed') ||
+         msg.includes('networkerror') ||
+         msg.includes('connection refused') ||
+         msg.includes('econnrefused') ||
+         msg.includes('socket hang up') ||
+         msg.includes('timeout') ||
+         msg.includes('eai_again') ||
+         msg.includes('enotfound') ||
+         msg.includes('etimedout')
+}
+
 async function getLatestReleaseDownloadUrl() {
   try {
     const response = await fetch(GITHUB_API, {
@@ -43,6 +63,7 @@ export async function downloadApp(onProgress) {
     return { success: true, uri: downloadRes.uri, fileName: safeName }
   } catch (err) {
     console.error('Download error:', err)
+    if (isNetworkError(err)) return { success: false, error: 'No connection, check internet' }
     return { success: false, error: err.message }
   }
 }

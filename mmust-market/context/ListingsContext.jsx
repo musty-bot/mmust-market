@@ -6,6 +6,26 @@ import * as FileSystem from 'expo-file-system/legacy'
 const ListingsContext = createContext(null)
 const BUCKET = 'listing-images'
 
+const isNetworkError = (err) => {
+  if (!err) return false
+  const msg = String(err.message || err.code || err.details || err || '').toLowerCase()
+  return msg.includes('network') || 
+         msg.includes('fetch') || 
+         msg.includes('timeout') || 
+         msg.includes('load failed') || 
+         msg.includes('offline') ||
+         msg.includes('failed to fetch') ||
+         msg.includes('network request failed') ||
+         msg.includes('networkerror') ||
+         msg.includes('connection refused') ||
+         msg.includes('econnrefused') ||
+         msg.includes('socket hang up') ||
+         msg.includes('timeout') ||
+         msg.includes('eai_again') ||
+         msg.includes('enotfound') ||
+         msg.includes('etimedout')
+}
+
 export async function uploadListingImages(imageUris) {
   try {
     if (!imageUris?.length) return []
@@ -34,10 +54,7 @@ export async function uploadListingImages(imageUris) {
     }
     return results
   } catch (err) {
-    const msg = String(err.message || '').toLowerCase()
-    if (msg.includes('network') || msg.includes('fetch') || msg.includes('timeout') || msg.includes('load failed') || msg.includes('offline')) {
-      throw new Error('No connection, check internet')
-    }
+    if (isNetworkError(err)) throw new Error('No connection, check internet')
     throw err
   }
 }
@@ -91,10 +108,7 @@ export function ListingsProvider({ children }) {
         .eq('id', id)
       if (error) throw error
     } catch (err) {
-      const msg = String(err.message || '').toLowerCase()
-      if (msg.includes('network') || msg.includes('fetch') || msg.includes('timeout') || msg.includes('load failed') || msg.includes('offline')) {
-        throw new Error('No connection, check internet')
-      }
+      if (isNetworkError(err)) throw new Error('No connection, check internet')
       throw err
     }
   }
@@ -138,10 +152,7 @@ export function ListingsProvider({ children }) {
       }
       return data
     } catch (err) {
-      const msg = String(err.message || '').toLowerCase()
-      if (msg.includes('network') || msg.includes('fetch') || msg.includes('timeout') || msg.includes('load failed') || msg.includes('offline')) {
-        throw new Error('No connection, check internet')
-      }
+      if (isNetworkError(err)) throw new Error('No connection, check internet')
       throw err
     }
   }
