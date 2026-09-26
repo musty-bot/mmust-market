@@ -124,22 +124,31 @@ export function AuthProvider({ children }) {
 
   const register = async (name, phone, password) => {
     const email = `${phone}@mmustmarket.local`
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name, phone } },
-    })
-    if (error) throw error
-
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-    if (signInError) {
-      if (data.user && !data.session) {
-        throw new Error('Account created. Please check your email to confirm before logging in.')
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name, phone } },
+      })
+      if (error) {
+        if (isNetworkError(error)) throw new Error('No connection, check internet')
+        throw error
       }
-      throw signInError
+
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password })
+      if (signInError) {
+        if (isNetworkError(signInError)) throw new Error('No connection, check internet')
+        if (data.user && !data.session) {
+          throw new Error('Account created. Please check your email to confirm before logging in.')
+        }
+        throw signInError
+      }
+      await loadProfile(signInData.user.id)
+      return user
+    } catch (err) {
+      if (isNetworkError(err)) throw new Error('No connection, check internet')
+      throw err
     }
-    await loadProfile(signInData.user.id)
-    return user
   }
 
   const login = async (email, password) => {
